@@ -232,7 +232,7 @@
 							<tr>
 								<th>#</th>
 								<th>Name</th>
-								<th>Email</th>
+								<th>SKU</th>
 								<th>Action</th>
 							</tr>
 						</thead>
@@ -241,15 +241,12 @@
 	foreach ($collection as $product) {                  
 		$model->load($product->getId());
 		$pname = $model->getName();
-		
-		//if(strcmp($pname,$product_name)==0) {
-		//	$id = $product->getId();
-		//}
+		$sku = $model->getSku();
 ?>
 							<tr>
 								<td><?php echo $product->getId(); ?></td>
 								<td><?php echo $pname; ?></td>
-								<td>1</td>
+								<td><?php echo $sku; ?></td>
 								<td>2</td>								
 							</tr>
 <?php
