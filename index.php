@@ -225,7 +225,7 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" style="margin-left: 10px;" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title">Customers <span class="pull-right"><input class="form-control" type="text" id="searchInput" placeholder="Filter"></span></h4>
+						<h4 class="modal-title">Customers <span class="pull-right"><input data-search="product" class="form-control searchInput" type="text" placeholder="Filter"></span></h4>
 					</div>						
 					<table class="table">
 						<thead>
@@ -233,10 +233,11 @@
 								<th>#</th>
 								<th>Name</th>
 								<th>SKU</th>
+								<th>Qty</th>
 								<th>Action</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody id="sproduct">
 <?php
 	foreach ($collection as $product) {                  
 		$model->load($product->getId());
@@ -247,11 +248,11 @@
 								<td><?php echo $product->getId(); ?></td>
 								<td><?php echo $pname; ?></td>
 								<td><?php echo $sku; ?></td>
-								<td>2</td>								
+								<td><input type="text" class="form-control"></td>
+								<td>1</td>
 							</tr>
 <?php
 	}
-
 ?>							
 						</tbody>
 					</table>
@@ -266,7 +267,7 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" style="margin-left: 10px;" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title">Customers <span class="pull-right"><input class="form-control" type="text" id="searchInput" placeholder="Filter"></span></h4>
+						<h4 class="modal-title">Customers <span class="pull-right"><input data-search="customer" class="form-control searchInput" type="text" placeholder="Filter"></span></h4>
 					</div>						
 					<table class="table">
 						<thead>
@@ -277,7 +278,7 @@
 								<th>Action</th>
 							</tr>
 						</thead>
-						<tbody id="sbody">
+						<tbody id="scustomer">
 <?php
 	// Get all users from store:
 	$collection = Mage::getModel('customer/customer')->getCollection();
@@ -334,11 +335,12 @@
         
 		<script>
 			// Search for a user:
-			$("#searchInput").keyup(function() {				
+			$(".searchInput").keyup(function() {				
 				if ('' != this.value) {
 				    var reg = new RegExp(this.value, 'i'); // case-insesitive
-				
-				    $('#sbody').find('tr').each(function() {
+					var stype = $(this).data("search");
+					
+				    $('#s' + stype).find('tr').each(function() {
 				        var $me = $(this);
 				        //if (!$me.children('td:first').text().match(reg)) {
 					    if (!$me.children('td').text().match(reg)) {
@@ -350,8 +352,7 @@
 				} else {
 				    $('#sbody').find('tr').show();
 				}
-
-			});	
+			});			
 			
 			// Add the user to the form
 			$(".userAdd").click(function() {
