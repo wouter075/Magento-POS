@@ -6,7 +6,15 @@
 	Mage::app('default');
 	Mage::setIsDeveloperMode(true);
 	ini_set('display_errors', 1);
-	umask(0);	
+	umask(0);
+	
+	
+	function getOrderStates() {		
+		$list = Mage::getModel('sales/order_status')->getResourceCollection()->getData();
+
+		return $list;
+	}	
+	
 ?>
 
 <!DOCTYPE html>
@@ -49,11 +57,16 @@
 									<label class="col-sm-2 control-label">Order Status</label>
 									<div class="col-sm-10">
 										<select class="form-control">
-											<option>1</option>
-											<option>2</option>
-											<option>3</option>
-											<option>4</option>
-											<option>5</option>
+											<option value="-1">Please select...</option>
+<?php
+	$orderStates = getOrderStates();
+	for ($i = 0; $i < count($orderStates); $i++) {
+		$status = $orderStates[$i]["status"];
+		$label = $orderStates[$i]["label"];
+		echo '											<option value="' . $status . '">' . $label . '</option>' . PHP_EOL;		
+	}
+		
+?>											
 										</select>
 									</div>
 								</div>								
@@ -215,10 +228,8 @@
         </div>
         <!-- Modal: Producs -->
 <?php
-
 	$model = Mage::getModel('catalog/product'); //getting product model
 	$collection = $model->getCollection(); //products collection
-		
 ?>		
 		<div class="modal fade products" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
 			<div class="modal-dialog modal-lg">
@@ -248,7 +259,7 @@
 								<td><?php echo $product->getId(); ?></td>
 								<td><?php echo $pname; ?></td>
 								<td><?php echo $sku; ?></td>
-								<td><input type="text" class="form-control"></td>
+								<td><input type="text" class="form-control" width="30px"></td>
 								<td>1</td>
 							</tr>
 <?php
@@ -304,14 +315,13 @@
 			$street = $address->getData('street');
 			$postcode = $address->getData('postcode');
 			$country = $address->getData('country_id');
-			//var_dump($address);
 		}
 ?>
 							<tr>
 								<td><?php echo $customer->getId(); ?></td>
 								<td><?php echo $customer->getName(); ?></td>
 								<td><?php echo $email; ?></td>	
-								<td><a data-country="<?php echo $country; ?>" data-postcode="<?php echo $postcode; ?>" data-street="<?php echo $street; ?>" data-city="<?php echo $city; ?>" data-street="<?php echo $street; ?>" data-lastname="<?php echo $customer->getLastname(); ?>" data-firstname="<?php echo $customer->getFirstname(); ?>"data-email="<?php echo $email; ?>"data-name="<?php echo $customer->getName(); ?>" data-id="<?php echo $id; ?>" class="fa fa-user-plus userAdd"></a></td>								
+								<td><a href="#" data-country="<?php echo $country; ?>" data-postcode="<?php echo $postcode; ?>" data-street="<?php echo $street; ?>" data-city="<?php echo $city; ?>" data-street="<?php echo $street; ?>" data-lastname="<?php echo $customer->getLastname(); ?>" data-firstname="<?php echo $customer->getFirstname(); ?>"data-email="<?php echo $email; ?>"data-name="<?php echo $customer->getName(); ?>" data-id="<?php echo $id; ?>" class="fa fa-user-plus userAdd"></a></td>								
 							</tr>
 <?php
 	}
@@ -334,15 +344,14 @@
         <script src="js/bootstrap.min.js"></script>
         
 		<script>
-			// Search for a user:
+			// Search for a user / products:
 			$(".searchInput").keyup(function() {				
 				if ('' != this.value) {
-				    var reg = new RegExp(this.value, 'i'); // case-insesitive
+				    var reg = new RegExp(this.value, 'i');
 					var stype = $(this).data("search");
 					
 				    $('#s' + stype).find('tr').each(function() {
 				        var $me = $(this);
-				        //if (!$me.children('td:first').text().match(reg)) {
 					    if (!$me.children('td').text().match(reg)) {
 				            $me.hide();
 				        } else {
@@ -356,9 +365,6 @@
 			
 			// Add the user to the form
 			$(".userAdd").click(function() {
-				//alert($(this).data("city"));
-				//$("#name").value( $(this).data("city") );
-				//$(this).data("id")
 				$("#name").val( $(this).data("name") );
 				$("#email").val( $(this).data("email") );
 
