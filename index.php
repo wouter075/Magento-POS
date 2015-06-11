@@ -13,7 +13,16 @@
 		$list = Mage::getModel('sales/order_status')->getResourceCollection()->getData();
 
 		return $list;
-	}	
+	}
+	
+	function getCountries() {
+		$list = Mage::getResourceModel('directory/country_collection')
+        	->loadData()
+            ->toOptionArray(false);
+        return $list;
+    }
+    
+    //print_r(getCountries());
 	
 ?>
 
@@ -137,10 +146,19 @@
 								<div class="form-group">
 									<label for="country" class="col-sm-2 control-label">Country</label>
 									<div class="col-sm-10">
-										<input type="text" class="form-control" id="bcountry" name="bstreet" placeholder="Country">
+										<select class="form-control" id="bcountry">
+											<option value="-1">Please select...</option>
+<?php
+	$countryList = getCountries();
+	for ($i = 0; $i < count($countryList); $i++) {
+		$value = $countryList[$i]["value"];
+		$label = $countryList[$i]["label"];
+		echo '											<option value="' . $value . '">' . $label . '</option>' . PHP_EOL;		
+	}
+?>										
+										</select>
 									</div>
-								</div>
-															
+								</div>			
 							</form>
 						</div>
 					</div>
@@ -183,7 +201,17 @@
 								<div class="form-group">
 									<label for="country" class="col-sm-2 control-label">Country</label>
 									<div class="col-sm-10">
-										<input type="text" class="form-control" id="scountry" name="sstreet" placeholder="Country">
+										<select class="form-control" id="scountry">
+											<option value="-1">Please select...</option>
+<?php
+	$countryList = getCountries();
+	for ($i = 0; $i < count($countryList); $i++) {
+		$value = $countryList[$i]["value"];
+		$label = $countryList[$i]["label"];
+		echo '											<option value="' . $value . '">' . $label . '</option>' . PHP_EOL;		
+	}
+?>										
+										</select>
 									</div>
 								</div>						
 							</form>
