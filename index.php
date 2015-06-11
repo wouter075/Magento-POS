@@ -22,8 +22,31 @@
         return $list;
     }
     
-    //print_r(getCountries());
+    function getShippingMethods() {
+		$methods = Mage::getSingleton('shipping/config')->getActiveCarriers();
 	
+	    $options = array();
+	
+	    foreach($methods as $_ccode => $_carrier)
+	    {
+	        $_methodOptions = array();
+	        if($_methods = $_carrier->getAllowedMethods())
+	        {
+	            foreach($_methods as $_mcode => $_method)
+	            {
+	                $_code = $_ccode . '_' . $_mcode;
+	                $_methodOptions[] = array('value' => $_code, 'label' => $_method);
+	            }
+	
+	            if(!$_title = Mage::getStoreConfig("carriers/$_ccode/title"))
+	                $_title = $_ccode;
+	
+	            $options[] = array('value' => $_methodOptions, 'label' => $_title);
+	        }
+	    }
+	
+	    return $options;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -73,8 +96,7 @@
 		$status = $orderStates[$i]["status"];
 		$label = $orderStates[$i]["label"];
 		echo '											<option value="' . $status . '">' . $label . '</option>' . PHP_EOL;		
-	}
-		
+	}	
 ?>											
 										</select>
 									</div>
@@ -204,7 +226,6 @@
 										<select class="form-control" id="scountry">
 											<option value="-1">Please select...</option>
 <?php
-	$countryList = getCountries();
 	for ($i = 0; $i < count($countryList); $i++) {
 		$value = $countryList[$i]["value"];
 		$label = $countryList[$i]["label"];
@@ -236,7 +257,24 @@
 							<h3 class="panel-title">Shipping &amp; Handeling Information</h3>
 						</div>
 						<div class="panel-body">
-							Panel content
+							<div class="form-group">
+								<label for="country" class="col-sm-2 control-label">Method</label>
+								<div class="col-sm-10">
+									<select class="form-control" id="scountry">
+										<option value="-1">Please select...</option>
+<?php
+	$shippingMethods = getShippingMethods();
+	for ($i = 0; $i < count($shippingMethods); $i++) {
+		$label = $shippingMethods[$i]["label"];
+		$value = $shippingMethods[$i]["value"][0]["value"];
+		$label2 = $shippingMethods[$i]["value"][0]["label"];
+		echo '											<option value="' . $value . '">' . $label . " - " . $label2 . '</option>' . PHP_EOL;		
+	}
+	
+?>										
+									</select>
+								</div>
+							</div>
 						</div>
 					</div>
 		        </div>		        
@@ -422,3 +460,4 @@
     </body>
 </html>    
 
+	
