@@ -78,7 +78,11 @@
 			.small {
 				float: right;
 				max-width: 150px;
-			}       
+			}
+			.inputerror {
+				background-color: #fcf8e3;
+				border-color: #f0ad4e;
+			}     
 		</style>
     </head>
     <body>
@@ -298,9 +302,20 @@
 						<div class="panel-heading">
 							<h3 class="panel-title">Items Ordered<span class="pull-right"><button type="button" class="btn btn-primary btn-xs" href="" data-target=".products" data-toggle="modal">Add Item</button></span></h3>
 						</div>
-						<div class="panel-body">
-							Panel content
-						</div>
+						<table class="table" id="productlist">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Name</th>
+									<th>SKU</th>
+									<th>Config</th>
+									<th>Qty</th>
+									<th>Action</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
 					</div>
 		        </div>		        		        
 	        </div>
@@ -315,7 +330,7 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" style="margin-left: 10px;" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title">Customers <span class="pull-right"><input data-search="product" class="form-control searchInput" type="text" placeholder="Filter"></span></h4>
+						<h4 class="modal-title">Products <span class="pull-right"><input data-search="product" class="form-control searchInput" type="text" placeholder="Filter"></span></h4>
 					</div>						
 					<table class="table">
 						<thead>
@@ -335,7 +350,8 @@
 		$pname = $model->getName();
 		$sku = $model->getSku();
 		$visibility = $model->getVisibility();
-		$select = "-";
+		$id = $product->getId();
+		$select = '<span id="label' . $id . '">-</span>';
 		
 		if ($visibility <> 1) {
 
@@ -348,7 +364,7 @@
 	            foreach($config->getConfigurableAttributesAsArray($cProduct) as $attributes) {
 		            $label = $attributes["label"];
 		            
-					$select = PHP_EOL . "									" . $label . PHP_EOL . "									" . '<select class="form-control input-sm small" name="super_attribute[' .  $attributes['attribute_id'] . ']" id="attribute' . $attributes['attribute_id'] . '">' . PHP_EOL;
+					$select = PHP_EOL . '									<span id="label' . $id . '">' . $label . '</span>'. PHP_EOL . "									" . '<select id="select' . $id . '" class="form-control input-sm small" name="super_attribute[' .  $attributes['attribute_id'] . ']" id="attribute' . $attributes['attribute_id'] . '">' . PHP_EOL;
 					foreach($attributes["values"] as $values) {
 						$select .= "										<option>" . $values["label"] . "</option>" . PHP_EOL;
 					}
@@ -357,12 +373,12 @@
 			}
 ?>
 							<tr>
-								<td class="col-md-1"><?php echo $product->getId(); ?></td>
-								<td><?php echo $pname; ?></td>
-								<td><?php echo $sku; ?></td>
+								<td class="col-md-1 pid"><?php echo $id; ?></td>
+								<td class="pname" id="name<?php echo $id; ?>"><?php echo $pname; ?></td>
+								<td class="psku" id="sku<?php echo $id; ?>"><?php echo $sku; ?></td>
 								<td><?php echo $select; ?></td>
-								<td class="col-md-1"><input type="text" class="form-control input-sm"></td>
-								<td class="col-md-1"><i class="fa fa-eraser fa-2x"></i>&nbsp;<i class="fa fa-chevron-right fa-2x"></i></td>
+								<td class="col-md-1"><input type="text" class="form-control input-sm pqty" name="qty" id="qty<?php echo $id; ?>"></td>
+								<td class="col-md-1"><i class="fa fa-eraser fa-2x"></i>&nbsp;<a href="#" class="productAdd" id="p<?php echo $id; ?>"><i class="fa fa-chevron-right fa-2x"></i></a></td>
 							</tr>
 <?php			
 		}	
@@ -447,6 +463,10 @@
         <script src="js/bootstrap.min.js"></script>
         
 		<script>
+			function isNumber(n) {
+				return !isNaN(parseFloat(n)) && isFinite(n);
+			}
+			
 			// Search for a user / products:
 			$(".searchInput").keyup(function() {				
 				if ('' != this.value) {
@@ -491,6 +511,42 @@
 					$("#scity").val( $("#bcity").val() );
 					$("#spostcode").val( $("#bpostcode").val() );
 					$("#scountry").val( $("#bcountry").val() );					
+				}
+			});
+			
+			// Product selection:
+			$(".productAdd").click(function() {
+				var action = '<i class="fa fa-eraser fa-2x"></i>';
+				var id = $(this).attr('id');
+				id = id.substr(1);
+
+				var qty = $("#qty" + id).val();
+				if (!isNumber(qty) ) {
+					// Not a number, so errror!
+					$("#qty" + id).addClass("inputerror");
+					$("#qty" + id).focus();
+				} else {
+				
+					var productname = $("#name" + id).html();
+					var sku = $("#sku" + id).html();
+					var config = $("#label" + id).html();
+					
+					// Check if its a configurable product:
+					if ($( "#select" + id ).length ){
+						config = config + " - " +$("#select" + id + " option:selected").text();
+					}
+					
+					// Append product to the main grid:
+					$('#productlist').append('<tr><td>' + id + '</td><td>' + productname +'</td><td>' + sku + '</td><td>' + config + '</td><td>' + qty + '</td><td>' + action + '</td></td></tr>');
+				}
+				
+			});
+			
+			// Input validation:
+			$('input[name=qty]').keyup(function() {
+				$(this).removeClass("inputerror");
+				if(!isNumber($(this).val())) {
+					$(this).addClass("inputerror");
 				}
 			});
 		</script>
