@@ -181,7 +181,6 @@
 										<input type="text" class="form-control" id="bpostcode" name="bpostcode" placeholder="Postcode">
 									</div>
 								</div>
-								
 								<div class="form-group">
 									<label for="country" class="col-sm-2 control-label">Country</label>
 									<div class="col-sm-10">
@@ -274,24 +273,25 @@
 							<h3 class="panel-title">Shipping &amp; Handeling Information</h3>
 						</div>
 						<div class="panel-body">
-							<div class="form-group">
-								<label for="country" class="col-sm-2 control-label">Method</label>
-								<div class="col-sm-10">
-									<select class="form-control" id="scountry">
-										<option value="-1">Please select...</option>
+							<form class="form-horizontal">
+								<div class="form-group">
+									<label for="shipping" class="col-sm-2 control-label">Method</label>
+									<div class="col-sm-10">
+										<select class="form-control" id="shipping">
+											<option value="-1">Please select...</option>
 <?php
 	$shippingMethods = getShippingMethods();
 	for ($i = 0; $i < count($shippingMethods); $i++) {
 		$label = $shippingMethods[$i]["label"];
 		$value = $shippingMethods[$i]["value"][0]["value"];
 		$label2 = $shippingMethods[$i]["value"][0]["label"];
-		echo '											<option value="' . $value . '">' . $label . " - " . $label2 . '</option>' . PHP_EOL;		
+		echo '												<option value="' . $value . '">' . $label . " - " . $label2 . '</option>' . PHP_EOL;		
 	}
-	
 ?>										
-									</select>
+										</select>
+									</div>
 								</div>
-							</div>
+							</form>
 						</div>
 					</div>
 		        </div>		        
