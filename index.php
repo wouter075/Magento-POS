@@ -7,13 +7,14 @@
 	Mage::setIsDeveloperMode(true);
 	ini_set('display_errors', 1);
 	umask(0);
-	
-	
+		
 	function getOrderStates() {		
 		$list = Mage::getModel('sales/order_status')->getResourceCollection()->getData();
 
 		return $list;
 	}
+	
+	
 	
 	function getCountries() {
 		$list = Mage::getResourceModel('directory/country_collection')
@@ -67,6 +68,18 @@
           <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
+        <style type="text/css">
+			@media (min-width: 768px) {
+				.modal-xl {
+					width: 90%;
+					max-width:1200px;
+				}
+			}
+			.small {
+				float: right;
+				max-width: 150px;
+			}       
+		</style>
     </head>
     <body>
         <div class="container-fluid">
@@ -298,7 +311,7 @@
 	$collection = $model->getCollection(); //products collection
 ?>		
 		<div class="modal fade products" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-lg">
+			<div class="modal-dialog modal-xl">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" style="margin-left: 10px;" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -310,6 +323,7 @@
 								<th>#</th>
 								<th>Name</th>
 								<th>SKU</th>
+								<th>Config</th>
 								<th>Qty</th>
 								<th>Action</th>
 							</tr>
@@ -320,17 +334,40 @@
 		$model->load($product->getId());
 		$pname = $model->getName();
 		$sku = $model->getSku();
+		$visibility = $model->getVisibility();
+		$select = "-";
+		
+		if ($visibility <> 1) {
+
+			$cProduct = Mage::getModel('catalog/product')->load($product->getId());
+	        //check if product is a configurable type or not
+	        if ($cProduct->getData('type_id') == "configurable") {
+	            //get the configurable data from the product
+	            $config = $cProduct->getTypeInstance(true);
+	            //loop through the attributes
+	            foreach($config->getConfigurableAttributesAsArray($cProduct) as $attributes) {
+		            $label = $attributes["label"];
+		            
+					$select = PHP_EOL . "									" . $label . PHP_EOL . "									" . '<select class="form-control input-sm small" name="super_attribute[' .  $attributes['attribute_id'] . ']" id="attribute' . $attributes['attribute_id'] . '">' . PHP_EOL;
+					foreach($attributes["values"] as $values) {
+						$select .= "										<option>" . $values["label"] . "</option>" . PHP_EOL;
+					}
+					$select .= '									</select>' . PHP_EOL . "								";
+				}
+			}
 ?>
 							<tr>
-								<td><?php echo $product->getId(); ?></td>
+								<td class="col-md-1"><?php echo $product->getId(); ?></td>
 								<td><?php echo $pname; ?></td>
 								<td><?php echo $sku; ?></td>
-								<td><input type="text" class="form-control" width="30px"></td>
-								<td>1</td>
+								<td><?php echo $select; ?></td>
+								<td class="col-md-1"><input type="text" class="form-control input-sm"></td>
+								<td class="col-md-1"><i class="fa fa-eraser fa-2x"></i>&nbsp;<i class="fa fa-chevron-right fa-2x"></i></td>
 							</tr>
-<?php
-	}
-?>							
+<?php			
+		}	
+	}            
+?>
 						</tbody>
 					</table>
 				</div>
@@ -340,7 +377,7 @@
 		
 		<!-- Modal: Users -->
 		<div class="modal fade users" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-lg">
+			<div class="modal-dialog modal-xl">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" style="margin-left: 10px;" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
