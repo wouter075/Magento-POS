@@ -10,7 +10,7 @@
 		
 	function getOrderStates() {		
 		$list = Mage::getModel('sales/order_status')->getResourceCollection()->getData();
-
+		
 		return $list;
 	}
 	
@@ -82,12 +82,31 @@
 			.inputerror {
 				background-color: #fcf8e3;
 				border-color: #f0ad4e;
-			}     
+			}
+			.hide {
+				display: none;
+			}
+			.panel-heading a:after {
+				font-family:'Glyphicons Halflings';
+				content:"\e114";
+				float: right;
+				color: grey;
+			}
+			.panel-heading a.collapsed:after {
+				content:"\e080";
+			} 
+			.searchUser {
+				cursor: pointer;	
+			} 
 		</style>
     </head>
     <body>
         <div class="container-fluid">
 	        <h1>Magento POS</h1>
+			<div class="alert alert-warning alert-dismissible orderComplete hide" role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<strong>Warning!</strong> When setting the order to <strong>complete</strong> the order gets <strong>invoiced</strong> and <strong>shipped</strong> automatically.
+			</div>
 	        <div class="row">
 		        <div class="col-md-6">
 			        <div class="panel panel-default">
@@ -105,7 +124,7 @@
 								<div class="form-group">
 									<label class="col-sm-2 control-label">Order Status</label>
 									<div class="col-sm-10">
-										<select class="form-control">
+										<select class="form-control orderStatus" name="orderstatus">
 											<option value="-1">Please select...</option>
 <?php
 	$orderStates = getOrderStates();
@@ -125,7 +144,7 @@
 		        <div class="col-md-6">
 			        <div class="panel panel-default">
 						<div class="panel-heading">
-							<h3 class="panel-title">Account Information<a href="#" class="pull-right" data-toggle="modal" data-target=".users"><i class="fa fa-search"></i></a></h3>
+							<h3 class="panel-title">Account Information<span class="pull-right searchUser" data-toggle="modal" data-target=".users"><i class="fa fa-search"></i></span></h3>
 						</div>
 						<div class="panel-body">
 							<form class="form-horizontal">
@@ -150,108 +169,117 @@
 		        <div class="col-md-6">
 			        <div class="panel panel-default">
 						<div class="panel-heading">
-							<h3 class="panel-title">Billing Address</h3>
+							<h3 class="panel-title">
+								<a data-toggle="collapse" data-target="#collapseBilling" href="#collapseBilling" class="collapsed">Billing Address</a>
+							</h3>
 						</div>
-						<div class="panel-body">
-							<form class="form-horizontal">
-								<div class="form-group">
-									<label class="col-sm-2 control-label">Name</label>
-									<div class="col-sm-5">
-										<input type="text" class="form-control" id="bfirstname" name="bfirstname" placeholder="Fristname">
+						<div id="collapseBilling" class="panel-collapse collapse">
+							<div class="panel-body">
+								<form class="form-horizontal">
+									<div class="form-group">
+										<label class="col-sm-2 control-label">Name</label>
+										<div class="col-sm-5">
+											<input type="text" class="form-control" id="bfirstname" name="bfirstname" placeholder="Fristname">
+										</div>
+										<div class="col-sm-5">
+											<input type="text" class="form-control" id="blastname" name="blastname" placeholder="Lastname">
+										</div>
 									</div>
-									<div class="col-sm-5">
-										<input type="text" class="form-control" id="blastname" name="blastname" placeholder="Lastname">
+									<div class="form-group">
+										<label for="street" class="col-sm-2 control-label">Street</label>
+										<div class="col-sm-10">
+											<input type="text" class="form-control" id="bstreet" name="bstreet" placeholder="Street">
+										</div>
 									</div>
-								</div>
-								<div class="form-group">
-									<label for="street" class="col-sm-2 control-label">Street</label>
-									<div class="col-sm-10">
-										<input type="text" class="form-control" id="bstreet" name="bstreet" placeholder="Street">
+									<div class="form-group">
+										<label for="street" class="col-sm-2 control-label">City</label>
+										<div class="col-sm-10">
+											<input type="text" class="form-control" id="bcity" name="bcity" placeholder="City">
+										</div>
 									</div>
-								</div>
-								<div class="form-group">
-									<label for="street" class="col-sm-2 control-label">City</label>
-									<div class="col-sm-10">
-										<input type="text" class="form-control" id="bcity" name="bcity" placeholder="City">
+									<div class="form-group">
+										<label for="postcode" class="col-sm-2 control-label">Postcode</label>
+										<div class="col-sm-10">
+											<input type="text" class="form-control" id="bpostcode" name="bpostcode" placeholder="Postcode">
+										</div>
 									</div>
-								</div>
-								<div class="form-group">
-									<label for="postcode" class="col-sm-2 control-label">Postcode</label>
-									<div class="col-sm-10">
-										<input type="text" class="form-control" id="bpostcode" name="bpostcode" placeholder="Postcode">
-									</div>
-								</div>
-								<div class="form-group">
-									<label for="country" class="col-sm-2 control-label">Country</label>
-									<div class="col-sm-10">
-										<select class="form-control" id="bcountry">
-											<option value="-1">Please select...</option>
+									<div class="form-group">
+										<label for="country" class="col-sm-2 control-label">Country</label>
+										<div class="col-sm-10">
+											<select class="form-control" id="bcountry">
+												<option value="-1">Please select...</option>
 <?php
 	$countryList = getCountries();
 	for ($i = 0; $i < count($countryList); $i++) {
 		$value = $countryList[$i]["value"];
 		$label = $countryList[$i]["label"];
-		echo '											<option value="' . $value . '">' . $label . '</option>' . PHP_EOL;		
+		echo '												<option value="' . $value . '">' . $label . '</option>' . PHP_EOL;		
 	}
 ?>										
-										</select>
-									</div>
-								</div>			
-							</form>
+											</select>
+										</div>
+									</div>			
+								</form>
+							</div>
 						</div>
 					</div>
 		        </div>
 		        <div class="col-md-6">
 			        <div class="panel panel-default">
 						<div class="panel-heading">
-							<h3 class="panel-title">Shipping Address<span class="pull-right"><label><input type="checkbox" name="billing" id="checkbilling">&nbsp;same as billing</label></span></h3>
+							
+							<h3 class="panel-title">
+								<a data-toggle="collapse" data-target="#collapseShipping" href="#collapseShipping" class="collapsed">Shipping Address</a><span class="pull-right"><label><input type="checkbox" name="billing" id="checkbilling">&nbsp;same as billing</label></span>
+							</h3>
 						</div>
-						<div class="panel-body">
-							<form class="form-horizontal">
-								<div class="form-group">
-									<label class="col-sm-2 control-label">Name</label>
-									<div class="col-sm-5">
-										<input type="text" class="form-control" id="sfirstname" name="sfirstname" placeholder="Fristname">
+						<div id="collapseShipping" class="panel-collapse collapse">
+							<div class="panel-body">
+								<form class="form-horizontal">
+									<div class="form-group">
+										<label class="col-sm-2 control-label">Name</label>
+										<div class="col-sm-5">
+											<input type="text" class="form-control" id="sfirstname" name="sfirstname" placeholder="Fristname">
+										</div>
+										<div class="col-sm-5">
+											<input type="text" class="form-control" id="slastname" name="slastname" placeholder="Lastname">
+										</div>
 									</div>
-									<div class="col-sm-5">
-										<input type="text" class="form-control" id="slastname" name="slastname" placeholder="Lastname">
+									<div class="form-group">
+										<label for="street" class="col-sm-2 control-label">Street</label>
+										<div class="col-sm-10">
+											<input type="text" class="form-control" id="sstreet" name="sstreet" placeholder="Street">
+										</div>
 									</div>
-								</div>
-								<div class="form-group">
-									<label for="street" class="col-sm-2 control-label">Street</label>
-									<div class="col-sm-10">
-										<input type="text" class="form-control" id="sstreet" name="sstreet" placeholder="Street">
+									<div class="form-group">
+										<label for="street" class="col-sm-2 control-label">City</label>
+										<div class="col-sm-10">
+											<input type="text" class="form-control" id="scity" name="scity" placeholder="City">
+										</div>
 									</div>
-								</div>
-								<div class="form-group">
-									<label for="street" class="col-sm-2 control-label">City</label>
-									<div class="col-sm-10">
-										<input type="text" class="form-control" id="scity" name="scity" placeholder="City">
+									<div class="form-group">
+										<label for="postcode" class="col-sm-2 control-label">Postcode</label>
+										<div class="col-sm-10">
+											<input type="text" class="form-control" id="spostcode" name="spostcode" placeholder="Postcode">
+										</div>
 									</div>
-								</div>
-								<div class="form-group">
-									<label for="postcode" class="col-sm-2 control-label">Postcode</label>
-									<div class="col-sm-10">
-										<input type="text" class="form-control" id="spostcode" name="spostcode" placeholder="Postcode">
-									</div>
-								</div>
-								
-								<div class="form-group">
-									<label for="country" class="col-sm-2 control-label">Country</label>
-									<div class="col-sm-10">
-										<select class="form-control" id="scountry">
-											<option value="-1">Please select...</option>
+									
+									<div class="form-group">
+										<label for="country" class="col-sm-2 control-label">Country</label>
+										<div class="col-sm-10">
+											<select class="form-control" id="scountry">
+												<option value="-1">Please select...</option>
 <?php
 	for ($i = 0; $i < count($countryList); $i++) {
 		$value = $countryList[$i]["value"];
 		$label = $countryList[$i]["label"];
-		echo '											<option value="' . $value . '">' . $label . '</option>' . PHP_EOL;		
+		echo '												<option value="' . $value . '">' . $label . '</option>' . PHP_EOL;		
 	}
 ?>										
-										</select>
-									</div>
-								</div>						
-							</form>
+											</select>
+										</div>
+									</div>						
+								</form>
+							</div>
 						</div>
 					</div>
 		        </div>		        
@@ -466,6 +494,13 @@
 			function isNumber(n) {
 				return !isNaN(parseFloat(n)) && isFinite(n);
 			}
+			// Cleanup at start:
+			$( document ).ready(function() {
+				//alert('Loaded');
+				$(".pqty").val('');
+				$(".small").val($(".small option:first").val());
+				$(".small").val($(".small option:first").val());
+			});
 			
 			// Search for a user / products:
 			$(".searchInput").keyup(function() {				
@@ -549,6 +584,29 @@
 					$(this).addClass("inputerror");
 				}
 			});
+			
+			// Orderstatus change:
+			$(".orderStatus").change(function() {
+				var status = $(".orderStatus option:selected").val();
+
+				switch(status) {
+					case 'complete':
+						$(".orderComplete").removeClass('hide');
+						break;
+						
+				}
+			});
+			
+			
+			// Collapse billing and shipping adresses
+			$('#collapseBilling').on('show.bs.collapse', function () {
+				$("#collapseShipping").collapse('show');
+			});
+
+			$('#collapseBilling').on('hide.bs.collapse', function () {
+				$("#collapseShipping").collapse('hide');
+			});
+			
 		</script>
     </body>
 </html>    
