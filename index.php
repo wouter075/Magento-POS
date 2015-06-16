@@ -48,6 +48,26 @@
 	
 	    return $options;
     }
+    
+	function getActivPaymentMethods() {
+		$payments = Mage::getSingleton('payment/config')->getActiveMethods();
+	
+		$methods = array();
+	
+		foreach ($payments as $paymentCode=>$paymentModel) {
+			$paymentTitle = Mage::getStoreConfig('payment/'.$paymentCode.'/title');
+			$methods[$paymentCode] = array(
+				'label'   => $paymentTitle,
+				'value' => $paymentCode,
+			);
+		}
+	
+		return $methods;
+	
+	}  
+	
+	
+	//print_r(getActivPaymentMethods());
 ?>
 
 <!DOCTYPE html>
@@ -291,7 +311,24 @@
 							<h3 class="panel-title">Payment Information</h3>
 						</div>
 						<div class="panel-body">
-							Panel content
+							<form class="form-horizontal">
+								<div class="form-group">
+									<label class="col-sm-2 control-label">Payment</label>
+									<div class="col-sm-10">
+										<select class="form-control orderStatus" name="orderstatus">
+											<option value="-1">Please select...</option>
+<?php
+	$paymentMethods = getActivPaymentMethods();
+	foreach ($paymentMethods as $paymentMethod) {
+		$value = $paymentMethod["value"];
+		$label = $paymentMethod["label"];
+		echo '											<option value="' . $value . '">' . $label . '</option>' . PHP_EOL;		
+	}	
+?>											
+										</select>
+									</div>
+								</div>								
+							</form>
 						</div>
 					</div>
 		        </div>		        
@@ -347,7 +384,25 @@
 					</div>
 		        </div>		        		        
 	        </div>
+
+            <div class="row">
+		        <div class="col-md-12">
+			        <div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">Order</h3>
+						</div>
+						<div class="panel-body">
+							<span class="pull-right"><button type="button" class="btn btn-primary btn-lg">Place Order</button></span>
+							Options<br />
+							Maintain stocks (each product will be increased in stock with the ordered amount).
+							
+						</div>
+			        </div>
+		        </div>
+	        </div>
+
         </div>
+        
         <!-- Modal: Producs -->
 <?php
 	$model = Mage::getModel('catalog/product'); //getting product model
@@ -498,7 +553,6 @@
 			$( document ).ready(function() {
 				//alert('Loaded');
 				$(".pqty").val('');
-				$(".small").val($(".small option:first").val());
 				$(".small").val($(".small option:first").val());
 			});
 			
