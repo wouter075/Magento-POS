@@ -81,7 +81,7 @@
         <!-- Bootstrap -->
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-
+		<link rel="stylesheet" href="css/bootstrap-datetimepicker.css" />
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -138,7 +138,12 @@
 								<div class="form-group">
 									<label class="col-sm-2 control-label">Order Date</label>
 									<div class="col-sm-10">
-										<input type="text" class="form-control" id="date" name="date" placeholder="Date">										
+										<div class='input-group date' id='datetimepicker1'>
+											<input type='text' class="form-control" />
+											<span class="input-group-addon">
+												<span class="glyphicon glyphicon-calendar"></span>
+											</span>
+										</div>										
 									</div>
 								</div>
 								<div class="form-group">
@@ -545,6 +550,12 @@
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="js/bootstrap.min.js"></script>
         
+        <!-- Moment.JS -->
+        <script type="text/javascript" src="js/moment.min.js"></script>
+        
+        <!-- Datetime picker -->
+        <script type="text/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
+        
 		<script>
 			function isNumber(n) {
 				return !isNaN(parseFloat(n)) && isFinite(n);
@@ -555,6 +566,11 @@
 				$(".pqty").val('');
 				$(".small").val($(".small option:first").val());
 			});
+			
+			// Init datatimepicker:
+			$(function () {
+            	$('#datetimepicker1').datetimepicker();
+            });			
 			
 			// Search for a user / products:
 			$(".searchInput").keyup(function() {				
