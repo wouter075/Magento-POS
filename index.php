@@ -117,7 +117,7 @@
 			} 
 			.searchUser {
 				cursor: pointer;	
-			} 
+			}
 		</style>
     </head>
     <body>
@@ -394,13 +394,11 @@
 		        <div class="col-md-12">
 			        <div class="panel panel-default">
 						<div class="panel-heading">
-							<h3 class="panel-title">Order</h3>
+							<h3 class="panel-title">Options</h3>
 						</div>
 						<div class="panel-body">
 							<span class="pull-right"><button type="button" class="btn btn-primary btn-lg">Place Order</button></span>
-							Options<br />
-							Maintain stocks (each product will be increased in stock with the ordered amount).
-							
+							<label><input type="checkbox" class="checkbox-helper"> Maintain stocks</label>&nbsp;-&nbsp;<small>Ordered items are added to the inventory.</small>
 						</div>
 			        </div>
 		        </div>
