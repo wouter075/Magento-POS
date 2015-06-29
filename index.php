@@ -372,7 +372,7 @@
 						<div class="panel-heading">
 							<h3 class="panel-title">Items Ordered<span class="pull-right"><button type="button" class="btn btn-primary btn-xs" href="" data-target=".products" data-toggle="modal">Add Item</button></span></h3>
 						</div>
-						<table class="table" id="productlist">
+						<table class="table" id="itemList">
 							<thead>
 								<tr>
 									<th>#</th>
@@ -397,7 +397,7 @@
 							<h3 class="panel-title">Options</h3>
 						</div>
 						<div class="panel-body">
-							<span class="pull-right"><button type="button" class="btn btn-primary btn-lg">Place Order</button></span>
+							<span class="pull-right"><button id="placeOrder" type="button" class="btn btn-primary btn-lg">Place Order</button></span>
 							<label><input type="checkbox" class="checkbox-helper"> Maintain stocks</label>&nbsp;-&nbsp;<small>Ordered items are added to the inventory.</small>
 						</div>
 			        </div>
@@ -418,7 +418,7 @@
 						<button type="button" style="margin-left: 10px;" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title">Products <span class="pull-right"><input data-search="product" class="form-control searchInput" type="text" placeholder="Filter"></span></h4>
 					</div>						
-					<table class="table">
+					<table class="table" id="productList">
 						<thead>
 							<tr>
 								<th>#</th>
@@ -452,7 +452,7 @@
 		            
 					$select = PHP_EOL . '									<span id="label' . $id . '">' . $label . '</span>'. PHP_EOL . "									" . '<select id="select' . $id . '" class="form-control input-sm small" name="super_attribute[' .  $attributes['attribute_id'] . ']" id="attribute' . $attributes['attribute_id'] . '">' . PHP_EOL;
 					foreach($attributes["values"] as $values) {
-						$select .= "										<option>" . $values["label"] . "</option>" . PHP_EOL;
+						$select .= '										<option value="' . $values["value_index"] . '">' . $values["label"] . "</option>" . PHP_EOL;
 					}
 					$select .= '									</select>' . PHP_EOL . "								";
 				}
@@ -639,8 +639,14 @@
 						config = config + " - " +$("#select" + id + " option:selected").text();
 					}
 					
+					// todo: Need to check if the product is already there.
+					
+					
+					// Product properties, for easy reading:
+					var productproperties = 'data-id="' + id + '" data-productname="' + productname + '" data-sku="' + sku + '" data-config="' + config + '" data-qty="' + qty + '"';
+					
 					// Append product to the main grid:
-					$('#productlist').append('<tr><td>' + id + '</td><td>' + productname +'</td><td>' + sku + '</td><td>' + config + '</td><td>' + qty + '</td><td>' + action + '</td></td></tr>');
+					$('#itemList').append('<tr ' + productproperties + '><td>' + id + '</td><td>' + productname +'</td><td>' + sku + '</td><td>' + config + '</td><td>' + qty + '</td><td>' + action + '</td></td></tr>');
 				}
 				
 			});
@@ -675,6 +681,16 @@
 				$("#collapseShipping").collapse('hide');
 			});
 			
+			// Place order:
+			$("#placeOrder").click(function() {
+				$('#itemList > tbody  > tr').each(function() {
+					//alert( $(this).data("id") );
+					//console.log( $( this )[ 0 ] );
+					
+				});
+				
+				
+			});
 		</script>
     </body>
 </html>    
